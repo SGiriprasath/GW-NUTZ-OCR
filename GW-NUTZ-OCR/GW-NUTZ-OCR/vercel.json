@@ -6,6 +6,6 @@
         "use": "@vercel/python"
     }],
     "routes": [
-        { "src": "(.*)", "dest": "/GW-NUTZ-OCR/GW-NUTZ-OCR/ocr.py" }
+        { "src": "(.*)", "dest": "./GW-NUTZ-OCR/GW-NUTZ-OCR/ocr.py" }
     ]
 }
