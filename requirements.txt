@@ -1,0 +1,9 @@
+paddleocr
+paddlepaddle
+flask
+pillow
+boto3
+werkzeug
+opencv-python
+numpy
+requests
