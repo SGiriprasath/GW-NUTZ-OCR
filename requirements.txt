@@ -7,3 +7,4 @@ werkzeug
 opencv-python
 numpy
 requests
+gunicorn
