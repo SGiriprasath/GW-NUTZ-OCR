@@ -1,3 +1,4 @@
+pip install --upgrade pip
 Python version - 3.11.9
 
 commands to install python library
