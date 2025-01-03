@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Multiple Images</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-size: 16px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .upload-container {
+            width: 400px;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 2px solid grey;
+            border-radius: 20px;
+        }
+
+        .upload-box {
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            height: 200px;
+        }
+
+        .upload-box input {
+            display: none;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #ed5050;
+            width: 0;
+            transition: width 0.4s;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 14px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background-color: #ed5050;
+            border: none;
+            border-radius: 13px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .buttons a {
+            padding: 14px 50px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background-color: #ed5050;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .buttons button:hover,
+        .buttons a:hover {
+            background-color: #ed5050;
+        }
+
+        .buttons a {
+            display: block;
+            border-radius: 13px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .message {
+            text-align: center;
+            color: #ed5050;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .design {
+            border-radius: 300px;
+            border: 3px solid #0f70e6;
+            font: 20px bold;
+            color: #ffffff;
+            padding: 20px 20px;
+            background-color: #0f70e6;
+            margin: 50px;
+            width: 200px;
+            font-weight: -10px;
+            font-family: tabloid scuzzball;
+        }
+
+        .animate {
+            font-size: 25px;
+            font-weight: bold;
+            margin: -20px;
+            color: black;
+        }
+
+        .train {
+            font-size: 14px;
+        }
+
+        h1.upload {
+            margin-bottom: 80px;
+            font-weight: bold;
+            color: black;
+            font-size: 48px;
+        }
+    </style>
+
+    <script>
+        function handleFiles(files) {
+            const progressContainer = document.querySelector('.progress-container');
+            const statusMessage = document.getElementById('upload-status');
+            const trainButton = document.querySelector('.train');
+            progressContainer.innerHTML = ''; // Clear previous progress bars
+            statusMessage.innerText = 'Images are uploading...'; // Set initial status message
+
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress';
+
+            const progressFill = document.createElement('div');
+            progressFill.className = 'progress-bar';
+
+            progressBar.appendChild(progressFill);
+            progressContainer.appendChild(progressBar);
+
+            const totalFiles = files.length;
+            let totalLoaded = 0;
+            let totalSize = 0;
+            let filesUploaded = 0;
+
+            Array.from(files).forEach(file => {
+                totalSize += file.size;
+            });
+
+            Array.from(files).forEach(file => {
+                const formData = new FormData();
+                formData.append('files', file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload');
+                xhr.upload.onprogress = (event) => {
+                    totalLoaded += event.loaded;
+                    const percent = Math.round((totalLoaded / totalSize) * 100);
+                    const displayPercent = Math.min(percent, 50); // Limit to 50%
+                    progressFill.style.width = displayPercent + '%';
+                };
+                xhr.onload = () => {
+                    if (xhr.status == 200) {
+                        filesUploaded++;
+                        if (filesUploaded === totalFiles) {
+                            progressFill.style.width = '100%';
+                            statusMessage.innerText = 'Images are uploaded successfully!';
+                            trainButton.disabled = false; // Enable the train button
+                        }
+                    } else {
+                        statusMessage.innerText = 'Error uploading images.';
+                    }
+                };
+                xhr.send(formData);
+            });
+        }
+
+       function startTraining() {
+    const trainingProgressContainer = document.querySelector('.training-progress-container');
+    const trainingStatusMessage = document.getElementById('training-status');
+    trainingProgressContainer.innerHTML = ''; // Clear previous progress bars
+    trainingStatusMessage.innerText = 'Training is in progress...'; // Set initial status message
+
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress';
+
+    const progressFill = document.createElement('div');
+    progressFill.className = 'progress-bar';
+
+    progressBar.appendChild(progressFill);
+    trainingProgressContainer.appendChild(progressBar);
+
+    // Animate the progress bar
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 1;
+        if (progress > 50) progress = 50; // Prevent from going to more than 50%
+        progressFill.style.width = progress + '%';
+    }, 100);
+
+    // Fetch request to start the training process
+    fetch('/train', {
+        method: 'POST'
+    }).then(response => response.json())
+        .then(data => {
+            clearInterval(interval); // Stop the progress animation
+            if (data.status === 'completed') {
+                progressFill.style.width = '100%';
+                trainingStatusMessage.innerText = 'Training is completed!';
+                const buttonLink = document.querySelector('.buttons a');
+                if (buttonLink) {
+                    buttonLink.style.pointerEvents = 'auto';
+                    buttonLink.style.opacity = '1';
+                }
+            } else {
+                trainingStatusMessage.innerText = 'Error during training';
+            }
+        }).catch(error => {
+            clearInterval(interval); // Stop the progress animation
+            trainingStatusMessage.innerText = 'Error during training';
+        });
+}
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadBox = document.querySelector('.upload-box');
+            const fileInput = uploadBox.querySelector('input');
+            const trainButton = document.querySelector('.train');
+            trainButton.disabled = true; // Disable the train button initially
+
+            uploadBox.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', () => {
+                handleFiles(fileInput.files);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h2 class="upload">Upload Multiple Images</h2>
+    <div class="upload-container">
+        <div class="upload-box">
+            <input type="file" name="files" multiple>
+            <button type="button" class="design">Upload images</button>
+            <p class="animate">or drop a file</p>
+        </div>
+        <div class="progress-container"></div>
+        <p id="upload-status" class="message"></p> <!-- Status message element -->
+        <div class="training-progress-container"></div> <!-- Training progress bar container -->
+        <p id="training-status" class="message"></p> <!-- Training status message element -->
+        <div class="buttons">
+            <button type="button" class="train" onclick="startTraining()">Train & Complete</button>
+            <!-- <a href="/">Next</a> -->
+        </div>
+    </div>
+</body>
+
+</html>
