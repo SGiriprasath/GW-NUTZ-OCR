@@ -2,7 +2,7 @@
     "name": "Giriprasath S",
     "version": 2,
     "builds": [{
-        "src": "*py",
+        "src": "/GW-NUTZ-OCR/GW-NUTZ-OCR/*.py",
         "use": "@vercel/python"
     }],
     "routes": [
